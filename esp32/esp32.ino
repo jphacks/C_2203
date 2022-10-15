@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #define LEFT_WHEEL_ENABLE_PIN 1000
 #define LEFT_WHEEL_PIN 1001
 #define RIGHT_WHEEL_ENABLE_PIN 1002
@@ -5,6 +7,7 @@
 #define RIGHT_WHEEL_PIN2 1004
 #define ARM_ENABLE_PIN 1005
 #define ARM_PIN 1006
+#define ARM_ROTATION_TIME 5
 
 // wheel クラス
 class Wheel
@@ -93,6 +96,7 @@ class Arm
 {
 private:
   Wheel *wheel;
+  bool is_closed;
 public:
   Arm(Wheel *wheel);
   void open();
@@ -101,6 +105,23 @@ public:
 
 Arm::Arm(Wheel *wheel) {
   this->wheel = wheel;
+}
+
+void Arm::open() {
+  if (!this->is_closed) return;
+  this->wheel->Forward();
+  // アームを開けるまでの時間スリープ
+  sleep(ARM_ROTATION_TIME/2);
+  this->wheel->Stop();
+  this->is_closed = false;
+}
+
+void Arm::close() {
+  if(this->is_closed) return;
+  this->wheel->Forward();
+  sleep(ARM_ROTATION_TIME/2);
+  this->wheel->Stop();
+  this->is_closed = true;
 }
 
 Wheel arm_wheel = Wheel(ARM_PIN);
