@@ -45,6 +45,7 @@ ReversibleWheel::ReversibleWheel(int pin1, int pin2) {
 }
 
 void ReversibleWheel::Forward() {
+  
 }
 
 void ReversibleWheel::Reverse() {
@@ -62,15 +63,29 @@ private:
   ReversibleWheel *right_wheel;
 public:
   Car(Wheel *left_wheel, ReversibleWheel *right_wheel);
-  void straight();
-  void back();
-  void stop();
-  void rotate();
+  void Straight();
+  void Stop();
+  void Rotate();
 };
 
 Car::Car(Wheel *left_wheel, ReversibleWheel *right_wheel) {
   this->left_wheel = left_wheel;
   this->right_wheel = right_wheel;
+}
+
+void Car::Straight() {
+  this->left_wheel->Forward();
+  this->right_wheel->Forward();
+}
+
+void Car::Stop() {
+  this->left_wheel->Stop();
+  this->right_wheel->Stop();
+}
+
+void Car::Rotate() {
+  this->left_wheel->Forward();
+  this->right_wheel->Reverse();
 }
 
 // Arm クラス
