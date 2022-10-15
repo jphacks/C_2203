@@ -26,9 +26,11 @@ Wheel::Wheel(int pin) {
 }
 
 void Wheel::Forward() {
+  digitalWrite(this->pin, HIGH);
 }
 
 void Wheel::Stop() {
+  digitalWrite(this->pin, LOW);
 }
 
 // ReversibleWheel クラス
@@ -49,13 +51,18 @@ ReversibleWheel::ReversibleWheel(int pin1, int pin2) {
 }
 
 void ReversibleWheel::Forward() {
-  
+  digitalWrite(this->pin1, HIGH);
+  digitalWrite(this->pin2, LOW);
 }
 
 void ReversibleWheel::Reverse() {
+  digitalWrite(this->pin1, LOW);
+  digitalWrite(this->pin2, HIGH);
 }
 
 void ReversibleWheel::Stop() {
+  digitalWrite(this->pin1, LOW);
+  digitalWrite(this->pin2, LOW);
 }
 
 
@@ -138,10 +145,14 @@ void setup() {
   // PIN初期化する LEFT_WHEEL_ENABLE_PIN
   // PIN初期化する RIGHT_WHEEL_ENABLE_PIN
   // PIN初期化する ARM_ENABLE_PIN
-
+  pinMode(LEFT_WHEEL_PIN, OUTPUT);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  left_wheel.Forward();
+  sleep(3);
+  left_wheel.Stop();
+  sleep(3);
 }
 
