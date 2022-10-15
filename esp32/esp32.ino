@@ -104,7 +104,7 @@ class Arm
 {
 private:
   Wheel *wheel;
-  bool is_closed;
+  bool is_closed = false;
 public:
   Arm(Wheel *wheel);
   void open();
@@ -116,7 +116,7 @@ Arm::Arm(Wheel *wheel) {
 }
 
 void Arm::open() {
-  if (!this->is_closed) return;
+  if (this->is_closed) return;
   this->wheel->Forward();
   // アームを開けるまでの時間スリープ
   sleep(ARM_ROTATION_TIME/2);
@@ -125,7 +125,7 @@ void Arm::open() {
 }
 
 void Arm::close() {
-  if(this->is_closed) return;
+  if(!this->is_closed) return;
   this->wheel->Forward();
   sleep(ARM_ROTATION_TIME/2);
   this->wheel->Stop();
@@ -145,14 +145,22 @@ void setup() {
   // PIN初期化する LEFT_WHEEL_ENABLE_PIN
   // PIN初期化する RIGHT_WHEEL_ENABLE_PIN
   // PIN初期化する ARM_ENABLE_PIN
+  pinMode(DRIVER_ENABLE_PIN1, OUTPUT);
+  pinMode(DRIVER_ENABLE_PIN2, OUTPUT);
   pinMode(LEFT_WHEEL_PIN, OUTPUT);
+  pinMode(RIGHT_WHEEL_PIN1, OUTPUT);
+  pinMode(RIGHT_WHEEL_PIN2, OUTPUT);
+  pinMode(ARM_PIN, OUTPUT);
+  
+  digitalWrite(DRIVER_ENABLE_PIN2, HIGH);
+  digitalWrite(DRIVER_ENABLE_PIN1, HIGH);
 }
 
+int loop_count = 0;
 void loop() {
   // put your main code here, to run repeatedly:
-  left_wheel.Forward();
-  sleep(3);
-  left_wheel.Stop();
+  car.Straight();
+  arm.open();
   sleep(3);
 }
 
