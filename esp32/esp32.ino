@@ -8,7 +8,7 @@
 #define RIGHT_WHEEL_PIN1 18
 #define RIGHT_WHEEL_PIN2 19
 #define ARM_PIN 33 
-#define ARM_ROTATION_TIME 5
+#define ARM_ROTATION_TIME 5.2
 
 // wheel クラス
 class Wheel
@@ -159,8 +159,13 @@ void setup() {
 int loop_count = 0;
 void loop() {
   // put your main code here, to run repeatedly:
-  car.Straight();
   arm.open();
-  sleep(3);
+  sleep(2);
+  arm.close();
+  sleep(2);
+  arm.open();
+  sleep(4);  
+  digitalWrite(DRIVER_ENABLE_PIN2, LOW);
+  digitalWrite(DRIVER_ENABLE_PIN1, LOW);
 }
 
