@@ -10,11 +10,13 @@ BluetoothSerial SerialBT;
 // RIGHT_WHEEL_ENABLE_PINでもある
 #define DRIVER_ENABLE_PIN1 17
 #define DRIVER_ENABLE_PIN2 16
+#define DRIVER_ENABLE_PIN3 26
 
-#define LEFT_WHEEL_PIN 32
+#define LEFT_WHEEL_PIN1 33
+#define LEFT_WHEEL_PIN2 32
 #define RIGHT_WHEEL_PIN1 18
 #define RIGHT_WHEEL_PIN2 19
-#define ARM_PIN 33 
+#define ARM_PIN 27
 #define ARM_ROTATION_TIME 5.2
 
 // wheel クラス
@@ -77,16 +79,18 @@ void ReversibleWheel::Stop() {
 class Car
 {
 private:
-  Wheel *left_wheel;
+  ReversibleWheel *left_wheel;
   ReversibleWheel *right_wheel;
 public:
-  Car(Wheel *left_wheel, ReversibleWheel *right_wheel);
+  Car(ReversibleWheel *left_wheel, ReversibleWheel *right_wheel);
   void Straight();
+  void Back();
   void Stop();
-  void Rotate();
+  void RotateRight();
+  void RotateLeft();
 };
 
-Car::Car(Wheel *left_wheel, ReversibleWheel *right_wheel) {
+Car::Car(ReversibleWheel *left_wheel, ReversibleWheel *right_wheel) {
   this->left_wheel = left_wheel;
   this->right_wheel = right_wheel;
 }
@@ -96,14 +100,24 @@ void Car::Straight() {
   this->right_wheel->Forward();
 }
 
+void Car::Back() {
+  this->left_wheel->Reverse();
+  this->right_wheel->Reverse();
+}
+
 void Car::Stop() {
   this->left_wheel->Stop();
   this->right_wheel->Stop();
 }
 
-void Car::Rotate() {
+void Car::RotateRight() {
   this->left_wheel->Forward();
   this->right_wheel->Reverse();
+}
+
+void Car::RotateLeft() {
+  this->left_wheel->Reverse();
+  this->right_wheel->Forward();
 }
 
 // Arm クラス
@@ -114,15 +128,15 @@ private:
   bool is_closed = false;
 public:
   Arm(Wheel *wheel);
-  void open();
-  void close();
+  void Open();
+  void Close();
 };
 
 Arm::Arm(Wheel *wheel) {
   this->wheel = wheel;
 }
 
-void Arm::open() {
+void Arm::Open() {
   if (this->is_closed) return;
   this->wheel->Forward();
   // アームを開けるまでの時間スリープ
@@ -131,7 +145,7 @@ void Arm::open() {
   this->is_closed = false;
 }
 
-void Arm::close() {
+void Arm::Close() {
   if(!this->is_closed) return;
   this->wheel->Forward();
   sleep(ARM_ROTATION_TIME/2);
@@ -140,7 +154,7 @@ void Arm::close() {
 }
 
 Wheel arm_wheel = Wheel(ARM_PIN);
-Wheel left_wheel = Wheel(LEFT_WHEEL_PIN);
+ReversibleWheel left_wheel = ReversibleWheel(LEFT_WHEEL_PIN1, LEFT_WHEEL_PIN2);
 ReversibleWheel right_wheel = ReversibleWheel(RIGHT_WHEEL_PIN1, RIGHT_WHEEL_PIN2);
 Car car = Car(&left_wheel, &right_wheel);
 Arm arm = Arm(&arm_wheel);
@@ -155,13 +169,16 @@ void setup() {
   // PIN初期化する ARM_ENABLE_PIN
   pinMode(DRIVER_ENABLE_PIN1, OUTPUT);
   pinMode(DRIVER_ENABLE_PIN2, OUTPUT);
-  pinMode(LEFT_WHEEL_PIN, OUTPUT);
+  pinMode(DRIVER_ENABLE_PIN3, OUTPUT);
+  pinMode(LEFT_WHEEL_PIN1, OUTPUT);
+  pinMode(LEFT_WHEEL_PIN2, OUTPUT);
   pinMode(RIGHT_WHEEL_PIN1, OUTPUT);
   pinMode(RIGHT_WHEEL_PIN2, OUTPUT);
   pinMode(ARM_PIN, OUTPUT);
   
-  digitalWrite(DRIVER_ENABLE_PIN2, HIGH);
   digitalWrite(DRIVER_ENABLE_PIN1, HIGH);
+  digitalWrite(DRIVER_ENABLE_PIN2, HIGH);
+  digitalWrite(DRIVER_ENABLE_PIN3, HIGH);
 }
 
 int loop_count = 0;
@@ -179,7 +196,12 @@ void loop() {
       // 前進処理
       SerialBT.println("forward");
       car.Straight();
-
+    }
+    else if (c == 'b')
+    {
+      // 前進処理
+      SerialBT.println("back");
+      car.Back();
     }
     else if (c == 's')
     {
@@ -190,28 +212,48 @@ void loop() {
     else if (c == 'r')
     {
       // 回転処理
-      SerialBT.println("rotate");
-      car.Rotate();
+      SerialBT.println("rotate right");
+      car.RotateRight();
+    }
+    else if (c == 'l')
+    {
+      // 回転処理
+      SerialBT.println("rotate left");
+      car.RotateLeft();
     }
     else if (c == 'o')
     {
       // 開腕処理
       SerialBT.println("open");
-      arm.open()
+      arm.Open();
     }
     else if (c == 'c')
     {
       // 閉腕処理
       SerialBT.println("close");
-      arm.close();
+      arm.Close();
+    }
+    // TODO: 一時的なものあとで消す
+    else if (c == 'a')
+    {
+      // 閉腕処理
+      SerialBT.println("rotate arm");
+      arm_wheel.Forward();
+    }
+    else if (c == 'A')
+    {
+      // 閉腕処理
+      SerialBT.println("stop arm");
+      arm_wheel.Stop();
     }
     else if (c == 'q')
     {
       // 修了処理
-      car.Stop();
-      arm.open();
-      digitalWrite(DRIVER_ENABLE_PIN2, LOW);
+      // car.Stop();
+      // arm.open();
       digitalWrite(DRIVER_ENABLE_PIN1, LOW);
+      digitalWrite(DRIVER_ENABLE_PIN2, LOW);
+      digitalWrite(DRIVER_ENABLE_PIN3, LOW);
     }
   }
 }
