@@ -9,7 +9,6 @@ let animations;
 let canvasElement;
 let model;
 let cloneModel;
-let modelPrevPosition;
 
 threexInit();
 function threexInit() {
@@ -95,7 +94,6 @@ function threexInit() {
     (gltf) => {
       animations = gltf.animations;
       model = gltf.scene;
-      modelPrevPosition = new THREE.Vector3(0, 0, 0);
 
       // marker lost時のためのコピー
       cloneModel = model.clone();
