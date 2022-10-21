@@ -190,4 +190,6 @@ function threexInit() {
 
     anime.play();
   }
+
+  function changeModel(modelName) {}
 }
