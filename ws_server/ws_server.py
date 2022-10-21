@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_socketio import SocketIO
 
 app = Flask(__name__)
@@ -7,30 +7,17 @@ app.config['SECRET_KEY'] = 'secret_key'
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 # 命令を受け取るページ
-# @app.route('/')
-# def index():
-#     return render_template('index.html')
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 # /animateにアクセスが来たら命令を送る
-@app.route('/animate/walk')
-def walk():
-    socketio.emit('walk', "walk request")
-    return "walk event is requested."
-
-@app.route('/animate/stop')
-def stop():
-    socketio.emit('stop', "stop request")
-    return "stop event is requested."
-
-@app.route('/animate/catch')
-def catch():
-    socketio.emit('catch', "catch request")
-    return "catch event is requested."
-
-@app.route('/animate/release')
-def release():
-    socketio.emit('release', "release request")
-    return "release event is requested."
+# クエリパラーメータはqで値は['stop', 'walk', 'stop_with_ball', 'walk_with_ball', 'stroke']のいずれか
+@app.route('/animate', methods=['GET'])
+def animate():
+    q = request.args.get("q")
+    socketio.emit('animate', q, broadcast=True)
+    return "animation succeeded"
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0', debug=True, port=5000)
