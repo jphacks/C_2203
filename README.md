@@ -49,8 +49,7 @@
   * WebSocket
     * [Socket.IO](https://socket.io/)
   * 手の検出
-    * [tensorflow.js](https://github.com/tensorflow/tfjs-models)
-    * [hand-pose-detection](https://github.com/tensorflow/tfjs-models/tree/master/hand-pose-detection)
+    * [tensorflow.js](https://github.com/tensorflow/tfjs-models) ( [hand-pose-detection](https://github.com/tensorflow/tfjs-models/tree/master/hand-pose-detection) )
   * AR
     * [AR.js](https://ar-js-org.github.io/AR.js-Docs/)
     * [three.js](https://github.com/mrdoob/three.js/)
