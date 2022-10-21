@@ -12,7 +12,7 @@ def index():
     return render_template('index.html')
 
 # /animateにアクセスが来たら命令を送る
-# クエリパラーメータはqで値は['stop', 'walk', 'stop_with_ball', 'walk_with_ball', 'stroke']のいずれか
+# クエリパラーメータはqで値は['stop', 'walk', 'stop_with_ball', 'walk_with_ball']のいずれか
 @app.route('/animate', methods=['GET'])
 def animate():
     q = request.args.get("q")
@@ -20,4 +20,4 @@ def animate():
     return "animation succeeded"
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', debug=True, port=5000)
+    socketio.run(app, host='0.0.0.0', debug=True, port=8000)
