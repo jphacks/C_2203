@@ -8,14 +8,14 @@
 BluetoothSerial SerialBT;
 
 // RIGHT_WHEEL_ENABLE_PINでもある
-#define DRIVER_ENABLE_PIN1 17
+#define DRIVER_ENABLE_PIN1 15
 #define DRIVER_ENABLE_PIN2 16
 #define DRIVER_ENABLE_PIN3 26
 
 #define LEFT_WHEEL_PIN1 33
 #define LEFT_WHEEL_PIN2 32
-#define RIGHT_WHEEL_PIN1 18
-#define RIGHT_WHEEL_PIN2 19
+#define RIGHT_WHEEL_PIN1 21
+#define RIGHT_WHEEL_PIN2 23
 #define ARM_PIN 27
 float arm_speed = 3.742;
 
