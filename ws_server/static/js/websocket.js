@@ -23,7 +23,6 @@ const animationStopWithBall = () => {
 
 // socket周りの通信定義
 const socket = io();
-sample();
 socket.on("connect", function () {
   console.log("ws connected");
 });
