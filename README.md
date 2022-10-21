@@ -41,18 +41,39 @@
 * 
 * 
 
-#### フレームワーク・ライブラリ・モジュール
-* 
-* 
+#### フレームワーク・ライブラリ・モジュール・ツール
+* サーバー
+  * [Flask](https://msiz07-flask-docs-ja.readthedocs.io/ja/latest/)
+  * [Flask-SocketIO](https://flask-socketio.readthedocs.io/en/latest/)
+* クライアント
+  * WebSocket
+    * [Socket.IO](https://socket.io/)
+  * 手の検出
+    * [tensorflow.js](https://github.com/tensorflow/tfjs-models)
+    * [hand-pose-detection](https://github.com/tensorflow/tfjs-models/tree/master/hand-pose-detection)
+  * AR
+    * [AR.js](https://ar-js-org.github.io/AR.js-Docs/)
+    * [three.js](https://github.com/mrdoob/three.js/)
+* ゴミ検出
+  * [OpenCV](https://github.com/opencv/opencv-python)
+  * [numpy](https://numpy.org/)
+* デバイスとの通信
+  * [pySerial](https://github.com/pyserial/pyserial)
+* モデリング
+  * [Blender](https://blender.jp/)
 
 #### デバイス
-* 
-* 
+* ESP-WROOM-32
+* カメラ
 
 ### 独自技術
 #### ハッカソンで開発した独自機能・技術
 * 独自で開発したものの内容をこちらに記載してください
 * 特に力を入れた部分をファイルリンク、またはcommit_idを記載してください。
+
+* ゴミの検知（画像処理）
+* 電子回路
+* 開閉機構
 
 #### 製品に取り入れた研究内容（データ・ソフトウェアなど）（※アカデミック部門の場合のみ提出必須）
 * 
