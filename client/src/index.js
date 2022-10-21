@@ -3,12 +3,33 @@ import websocketInit from "./websocket.js";
 const clock = new THREE.Clock();
 
 let scene, camera, renderer;
-let arToolkitSource, arToolkitContext;
-let mixer;
-let animations;
+let arToolkitSource, arToolkitContext, arMarkerControls;
+let markerRoot;
 let canvasElement;
-let model;
-let cloneModel;
+
+// model関連
+let models = {
+  walk: {
+    url: "./dog.glb",
+    model: null,
+    mixer: null,
+    animations: null,
+  },
+  withBall: {
+    url: "./dog_ball.glb",
+    model: null,
+    mixer: null,
+    animations: null,
+  },
+  withHeart: {
+    url: "./dog_heart.glb",
+    model: null,
+    mixer: null,
+    animations: null,
+  },
+};
+let currentModelName;
+let cloneCurrentModel;
 
 threexInit();
 function threexInit() {
@@ -72,125 +93,142 @@ function threexInit() {
     passive: true,
   });
 
-  const markerRoot = new THREE.Group();
+  markerRoot = new THREE.Group();
   scene.add(markerRoot);
 
   // カメラの座標は0,0,0
   // markerのpositionのzIndex：奥→手前はマイナス→0
-  const arMarkerControls = new THREEx.ArMarkerControls(
-    arToolkitContext,
-    markerRoot,
-    {
-      type: "pattern",
-      patternUrl: "data/pattern.patt",
-    }
-  );
+  arMarkerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+    type: "pattern",
+    patternUrl: "data/pattern.patt",
+  });
 
+  loadModels().then(() => {
+    console.log("then");
+    initModel("withHeart");
+    console.log("inited");
+  });
+  console.log(models);
+}
+async function loadModels() {
   // 3Dモデル読み込み
   const loader = new THREE.GLTFLoader();
-  const url = "./dog_walk.glb";
 
-  loader.load(
-    url,
-    (gltf) => {
-      animations = gltf.animations;
-      model = gltf.scene;
+  for (const [_, v] of Object.entries(models)) {
+    const model = await loader.loadAsync(v.url);
+    v.animations = await model.animations;
+    v.model = await model.scene;
+    console.log(v);
 
-      // marker lost時のためのコピー
-      cloneModel = model.clone();
-      cloneModel.visible = false;
-      scene.add(cloneModel);
+    if (v.animations && v.animations.length) {
+      v.mixer = new THREE.AnimationMixer(v.model);
 
-      if (animations && animations.length) {
-        mixer = new THREE.AnimationMixer(model);
+      const animation = v.animations[0];
+      const action = v.mixer.clipAction(animation);
 
-        for (let i = 0; i < animations.length; i++) {
-          const animation = animations[i];
-          const action = mixer.clipAction(animation);
+      action.play();
+    }
 
-          action.play();
+    v.model.scale.set(1.0, 1.0, 1.0);
+    v.model.position.set(0, 0, 0);
+    v.model.rotation.y = Math.PI;
+  }
+}
+
+function initModel(modelName) {
+  currentModelName = modelName;
+  console.log(models["withHeart"]);
+  // marker lost時のためのコピー
+  cloneModel(models[modelName].model);
+
+  models[modelName].mixer.stopAllAction();
+
+  markerRoot.add(models[modelName].model);
+}
+
+function cloneModel(model) {
+  cloneCurrentModel = model.clone();
+  cloneCurrentModel.visible = false;
+  scene.add(cloneCurrentModel);
+}
+
+function handleResize() {
+  arToolkitSource.onResize();
+  arToolkitSource.copySizeTo(renderer.domElement);
+
+  if (arToolkitContext.arController) {
+    arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);
+  }
+}
+
+function update() {
+  if (arToolkitSource.ready) {
+    const visible = arMarkerControls.object3d.visible;
+    if (visible) {
+      cloneCurrentModel.position.set(
+        arMarkerControls.object3d.position.x,
+        arMarkerControls.object3d.position.y,
+        arMarkerControls.object3d.position.z
+      );
+      cloneCurrentModel.visible = false;
+    }
+
+    arToolkitContext.update(arToolkitSource.domElement);
+
+    // markerが途切れたらその場に表す処理
+    if (
+      !visible &&
+      cloneCurrentModel &&
+      !cloneCurrentModel.position?.equals(new THREE.Vector3(0, 0, 0)) &&
+      !cloneCurrentModel.visible
+    ) {
+      cloneCurrentModel.visible = true;
+      console.log("marker lost");
+    }
+
+    // 手の検知
+    predict().then((predictions) => {
+      // markerが一定以上カメラに近づいていることを判定
+      if (predictions?.length > 0 && arMarkerControls.object3d.visible) {
+        const distance =
+          camera.position.z - arMarkerControls.object3d.position.z;
+        if (distance < 6) {
+          console.log("marker too close when handtracking");
         }
       }
+    });
+  }
 
-      model.scale.set(1.0, 1.0, 1.0);
-      model.position.set(0, 0, 0);
-      model.rotation.y = Math.PI;
-      markerRoot.add(model);
-    },
-    (err) => {
-      console.error(err);
-    }
+  if (models[currentModelName]?.mixer) {
+    models[currentModelName].mixer.update(clock.getDelta());
+  }
+}
+
+function render() {
+  renderer.render(scene, camera);
+}
+
+function tick() {
+  update();
+  render();
+  requestAnimationFrame(tick);
+}
+
+export function changeAnimation(animationNum) {
+  models[currentModelName].mixer.stopAllAction();
+  const anime = models[currentModelName].mixer.clipAction(
+    models[currentModelName].animations[animationNum]
   );
+  console.log(anime);
 
-  function handleResize() {
-    arToolkitSource.onResize();
-    arToolkitSource.copySizeTo(renderer.domElement);
+  anime.play();
+}
 
-    if (arToolkitContext.arController) {
-      arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);
-    }
-  }
+export function changeModel(modelName) {
+  markerRoot.remove(models[currentModelName].model);
+  currentModelName = modelName;
 
-  function update() {
-    if (arToolkitSource.ready) {
-      const visible = arMarkerControls.object3d.visible;
-      if (visible) {
-        cloneModel.position.set(
-          arMarkerControls.object3d.position.x,
-          arMarkerControls.object3d.position.y,
-          arMarkerControls.object3d.position.z
-        );
-        cloneModel.visible = false;
-      }
-
-      arToolkitContext.update(arToolkitSource.domElement);
-
-      // markerが途切れたらその場に表す処理
-      if (
-        !visible &&
-        !cloneModel.position.equals(new THREE.Vector3(0, 0, 0)) &&
-        !cloneModel.visible
-      ) {
-        cloneModel.visible = true;
-        console.log("marker lost");
-      }
-
-      // 手の検知
-      predict().then((predictions) => {
-        // markerが一定以上カメラに近づいていることを判定
-        if (predictions?.length > 0 && arMarkerControls.object3d.visible) {
-          const distance =
-            camera.position.z - arMarkerControls.object3d.position.z;
-          if (distance < 5) {
-            console.log("too close");
-          }
-        }
-      });
-    }
-
-    if (mixer) {
-      mixer.update(clock.getDelta());
-    }
-  }
-
-  function render() {
-    renderer.render(scene, camera);
-  }
-
-  function tick() {
-    update();
-    render();
-    requestAnimationFrame(tick);
-  }
-
-  function changeAnimation(animationNum) {
-    mixer.stopAllAction();
-    const anime = mixer.clipAction(animations[num]);
-    anime.setLoop(THREE.LoopOnce);
-    anime.clampWhenFinished = true;
-
-    anime.play();
-  }
-
-  function changeModel(modelName) {}
+  const model = models[modelName].model;
+  cloneModel(model);
+  markerRoot.add(model);
 }
