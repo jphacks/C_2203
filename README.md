@@ -34,7 +34,7 @@
 
 ## 開発技術
 ### アーキテクチャ
-<img src="https://github.com/jphacks/C_2203/blob/feature/readme/documents/architecture.jpg" width="100">
+<img src="https://github.com/jphacks/C_2203/blob/feature/readme/documents/architecture.jpg" width="100%">
 
 ### 活用した技術
 - 
