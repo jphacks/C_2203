@@ -111,13 +111,13 @@ void Car::Stop() {
 }
 
 void Car::RotateRight() {
-  this->left_wheel->Forward();
-  this->right_wheel->Reverse();
+  this->left_wheel->Reverse();
+  this->right_wheel->Forward();
 }
 
 void Car::RotateLeft() {
-  this->left_wheel->Reverse();
-  this->right_wheel->Forward();
+  this->left_wheel->Forward();
+  this->right_wheel->Reverse();
 }
 
 // Arm クラス
