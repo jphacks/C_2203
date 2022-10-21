@@ -75,10 +75,15 @@ AR技術で可愛らしい姿が見えるだけでなく、こちらの撫でる
 #### ハッカソンで開発した独自機能・技術
 * 独自で開発したものの内容をこちらに記載してください
 * 特に力を入れた部分をファイルリンク、またはcommit_idを記載してください。
+
+* ゴミの検知（画像処理）[commit](https://github.com/jphacks/C_2203/blob/master/image_processing/main.py#L12..L48)
 <!-- TODO -->
-* ゴミの検知（画像処理）
 <img>
+
 * 電子回路
-<img>
+回路構成（配線含め）を自作しました。
+<img src="https://github.com/jphacks/C_2203/blob/master/documents/circuit/circuit.jpg" width="100%">
+
 * 開閉機構
+<!-- TODO -->
 <img>
