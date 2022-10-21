@@ -7,10 +7,10 @@ import serial
 
 import time
 
-serialBT = serial.Serial('COM3', 9600)
+serialBT = serial.Serial('COM4', 9600)
 
 def gomi_detect(frame, bg):
-    th = 60
+    th = 70
     is_detect = False
     gomi_xy = (0, 0)
     # グレースケール変換
@@ -86,19 +86,22 @@ def get_angle_and_dir(u, v):
     return np.rad2deg(np.arccos(np.clip(c, -1.0, 1.0))), dir
 
 
-def write_to_esp(code, cool_time=0.5):
+def write_to_esp(code, cool_time=0.1):
     serialBT.write(code.encode())
     time.sleep(cool_time)
 
 
 def car_control(car_control_flag, theta, target_dir, dist, is_return):
-    STOP_DIST = 120
-    STOP_THETA = 3 if not is_return else 8
-    write_stop = False
+    STOP_DIST = 20
+    STOP_THETA = 10
+    # if dist < STOP_DIST+10:
+    #     STOP_THETA = 2 if not is_return else 8
+    if dist < STOP_DIST+40:
+        STOP_THETA = 5 if not is_return else 8
     is_reached = False
     if car_control_flag == 0: # 停止時
         if dist > STOP_DIST+5:
-            if theta <= STOP_THETA+3:
+            if theta <= STOP_THETA+1:
                 print("前進")
                 write_to_esp("f")
                 car_control_flag = 1
@@ -124,17 +127,15 @@ def car_control(car_control_flag, theta, target_dir, dist, is_return):
             car_control_flag = 5
 
     elif car_control_flag == 1: # 前進時
-        if dist <= STOP_DIST or theta > STOP_THETA+3:
+        if dist <= STOP_DIST or theta > STOP_THETA+1:
             print("前進停止")
             write_to_esp("s", 0.1)
-            write_stop = True
             car_control_flag = 0
 
     elif car_control_flag == 3 or car_control_flag == 4:
         if theta <= STOP_THETA:
             print("回転停止")
             write_to_esp("s", 0.1)
-            write_stop = True
             car_control_flag = 0
 
     elif car_control_flag == 5:
@@ -143,13 +144,14 @@ def car_control(car_control_flag, theta, target_dir, dist, is_return):
             write_to_esp("c", 3.0)
         else:
             write_to_esp("o", 3.0)
-            write_to_esp("r", 7.0)
-            write_to_esp("s", 0.1)
+            # write_to_esp("b", 1.0)
+            # write_to_esp("r", 7.0)
+            # write_to_esp("s", 0.1)
         car_control_flag = 0
         is_reached = True
 
 
-    return car_control_flag, write_stop, is_reached
+    return car_control_flag, is_reached
 
 
 def main():
@@ -158,11 +160,15 @@ def main():
     start_cnt = 0
     stop_cool_cnt = 0
     gomi_xy = (0, 0)
-    goal_xy = (500, 400)
+    goal_xy = (640, 600)
     car_control_flag = 0
     is_return = False
 
     cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+    cap.set(cv2.CAP_PROP_FOCUS, 0)
 
     # 最初のフレームを背景画像に設定
     # ret, bg = cap.read()
@@ -175,13 +181,15 @@ def main():
             break
 
         if mode == 0:
-            if start_cnt < 50:
-                start_cnt += 1
-            else:
-                start_cnt += 1
-                mode = 1
-                print("ゴミ検知を開始")
-                bg = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            # cv2.drawMarker(frame, goal_xy, (0, 0, 0), markerType=cv2.MARKER_STAR, markerSize=10)
+            pass
+            # if start_cnt < 50:
+            #     start_cnt += 1
+            # else:
+            #     start_cnt += 1
+            #     mode = 1
+            #     print("ゴミ検知を開始")
+            #     bg = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         if mode == 1:
             mask, is_detect, gomi_xy = gomi_detect(frame, bg)
@@ -217,10 +225,8 @@ def main():
                 dist = np.linalg.norm(gomi_vec, ord=2)
                 print(f"theta: {theta}, dir:{target_dir}, dist:{dist}")
 
-                car_control_flag, write_stop, is_reached = car_control(car_control_flag, theta, target_dir, dist, is_return)
+                car_control_flag, is_reached = car_control(car_control_flag, theta, target_dir, dist, is_return)
 
-                if write_stop:
-                    mode = 4
                 if is_reached:
                     print("ゴミを取得しました．戻ります．")
                     is_return = True
@@ -250,9 +256,8 @@ def main():
                 dist = np.linalg.norm(target_dist_vec, ord=2)
                 print(f"theta: {theta}, dir:{target_dir}, dist:{dist}")
 
-                car_control_flag, write_stop, is_reached = car_control(car_control_flag, theta, target_dir, dist, is_return)
-                if write_stop:
-                    mode = 4
+                car_control_flag, is_reached = car_control(car_control_flag, theta, target_dir, dist, is_return)
+
                 if is_reached:
                     print("到着")
                     mode = 6
@@ -260,12 +265,13 @@ def main():
 
         # フレームとマスク画像を表示
         # cv2.imshow("Mask", mask)
+        cv2.namedWindow("Frame", cv2.WINDOW_NORMAL)
         cv2.imshow("Frame", frame)
 
         if mode <= 2:
             time.sleep(0.05)
         else:
-            time.sleep(0.01)
+            time.sleep(0.005)
 
 
         # qキーが押されたら途中終了
@@ -282,6 +288,10 @@ def main():
             start_cnt = 0
             ret, bg = cap.read()
             bg = cv2.cvtColor(bg, cv2.COLOR_BGR2GRAY)
+        elif k == ord('s'):
+            mode = 1
+            print("ゴミ検知を開始")
+            bg = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     cap.release()
     cv2.destroyAllWindows()
