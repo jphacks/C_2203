@@ -214,8 +214,12 @@ function tick() {
   requestAnimationFrame(tick);
 }
 
-export function changeAnimation(animationNum) {
+function stopAnimation() {
   models[currentModelName].mixer.stopAllAction();
+}
+
+function changeAnimation(animationNum) {
+  stopAnimation();
   const anime = models[currentModelName].mixer.clipAction(
     models[currentModelName].animations[animationNum]
   );
@@ -224,11 +228,39 @@ export function changeAnimation(animationNum) {
   anime.play();
 }
 
-export function changeModel(modelName) {
-  markerRoot.remove(models[currentModelName].model);
+function changeModel(modelName) {
+  if (currentModelName == modelName) {
+    return;
+  }
+  markerRoot.remove(model);
   currentModelName = modelName;
 
   const model = models[modelName].model;
   cloneModel(model);
   markerRoot.add(model);
+}
+
+export function walk() {
+  changeModel("walk");
+  changeAnimation(0);
+}
+
+export function stop() {
+  changeModel("walk");
+  stopAnimation();
+}
+
+export function walkWithBall() {
+  changeModel("withBall");
+  changeAnimation(0);
+}
+
+export function stopWithBall() {
+  changeModel("withBall");
+  stopAnimation();
+}
+
+function stroke() {
+  changeAnimation("withHeart");
+  changeAnimation(1);
 }

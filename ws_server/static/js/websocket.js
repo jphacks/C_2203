@@ -1,44 +1,49 @@
+import { walk, stop, walkWithBall, stopWithBall } from "./index.js";
 // 各アニメーションの変更定義
 // アニメーション止まる
-const animation_stop = () => {
-  console.log("animation stop")
-}
+const animationStop = () => {
+  console.log("animation stop");
+  stop();
+};
 // アニメーション歩いている
-const animation_walking = () => {
-  console.log("animation walking")
-}
+const animationWalking = () => {
+  console.log("animation walking");
+  walk();
+};
 // アニメーション拾って歩いている状態
-const animation_picked = () => {
-  console.log("animation picked")
-}
-// アニメーション撫でた後
-const animation_stroked = () => {
-  console.log("animation stroked")
-}
-
+const animationWalkingWithBall = () => {
+  console.log("animation picked");
+  walkWithBall();
+};
+// アニメーション拾って歩いている状態
+const animationStopWithBall = () => {
+  console.log("animation picked");
+  stopWithBall();
+};
 
 // socket周りの通信定義
 const socket = io();
-socket.on('connect', function() {
-  console.log("ws connected")
+sample();
+socket.on("connect", function () {
+  console.log("ws connected");
 });
 
-socket.on("animate", function(message) {
-  console.log(message)
+socket.on("animate", function (message) {
+  console.log(message);
   switch (message) {
     case "stop":
-      animation_stop();
+      animationStop();
       break;
     case "walk":
-      animation_walking();
+      animationWalking();
       break;
-    case "pick":
-      animation_picked();
+    case "stop_with_ball":
+      animationStopWithBall();
       break;
-    case "stroke":
-      animation_stroked();
+    case "walk_with_ball":
+      animationWalkingWithBall();
       break;
     default:
-      console.log(`unknown animation: ${message}`)
+      console.log(`unknown animation: ${message}`);
   }
-})
+});
