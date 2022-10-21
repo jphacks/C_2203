@@ -1,0 +1,11 @@
+services:
+  flask:
+    build:
+      context: ./ws_server
+    ports:
+      - '5000:5000'
+    volumes:
+      - './ws_server/:/app'
+    command: python ws_server.py
+    tty: true
+    stdin_open: true
