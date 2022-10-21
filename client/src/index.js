@@ -12,6 +12,7 @@ let cloneModel;
 
 threexInit();
 function threexInit() {
+  websocketInit();
   scene = new THREE.Scene();
 
   // カメラ
