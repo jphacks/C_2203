@@ -82,7 +82,7 @@ AR技術で可愛らしい姿が見えるだけでなく、こちらの撫でる
 
 * 電子回路
 回路構成（配線含め）を自作しました。
-<img src="https://github.com/jphacks/C_2203/blob/master/documents/circuit/circuit.jpg" width="100%">
+<img src="https://github.com/jphacks/C_2203/blob/master/documents/circuit/circuit.jpg" width="60%">
 
 * 開閉機構
 <!-- TODO -->
