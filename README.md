@@ -37,11 +37,6 @@
 <img src="https://github.com/jphacks/C_2203/blob/feature/readme/documents/architecture.jpg" width="100%">
 
 ### 活用した技術
-- 
-#### API・データ
-* 
-* 
-
 #### フレームワーク・ライブラリ・モジュール・ツール
 * サーバー
   * [Flask](https://msiz07-flask-docs-ja.readthedocs.io/ja/latest/)
@@ -72,8 +67,11 @@
 * 特に力を入れた部分をファイルリンク、またはcommit_idを記載してください。
 
 * ゴミの検知（画像処理）
+<img>
 * 電子回路
+<img>
 * 開閉機構
+<img>
 
 #### 製品に取り入れた研究内容（データ・ソフトウェアなど）（※アカデミック部門の場合のみ提出必須）
 * 
