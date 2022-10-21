@@ -17,7 +17,7 @@ BluetoothSerial SerialBT;
 #define RIGHT_WHEEL_PIN1 18
 #define RIGHT_WHEEL_PIN2 19
 #define ARM_PIN 27
-#define ARM_ROTATION_TIME 5.2
+float arm_speed = 3.742;
 
 // wheel クラス
 class Wheel
@@ -139,8 +139,7 @@ Arm::Arm(Wheel *wheel) {
 void Arm::Open() {
   if (this->is_closed) return;
   this->wheel->Forward();
-  // アームを開けるまでの時間スリープ
-  sleep(ARM_ROTATION_TIME/2);
+  usleep(arm_speed/2*1000000);
   this->wheel->Stop();
   this->is_closed = false;
 }
@@ -148,7 +147,7 @@ void Arm::Open() {
 void Arm::Close() {
   if(!this->is_closed) return;
   this->wheel->Forward();
-  sleep(ARM_ROTATION_TIME/2);
+  usleep(arm_speed/2*1000000);
   this->wheel->Stop();
   this->is_closed = true;
 }
@@ -163,6 +162,7 @@ void setup() {
   Serial.begin(115200);
   SerialBT.begin("ESP32test"); //Bluetooth device name
   Serial.println("The device started, now you can pair it with bluetooth!");
+  SerialBT.println("bluetooth setup");
 
   // PIN初期化する LEFT_WHEEL_ENABLE_PIN
   // PIN初期化する RIGHT_WHEEL_ENABLE_PIN
@@ -181,7 +181,6 @@ void setup() {
   digitalWrite(DRIVER_ENABLE_PIN3, HIGH);
 }
 
-int loop_count = 0;
 void loop() { 
   // Bluetoothから受け取ったデータがある場合
   if (SerialBT.available())
@@ -245,6 +244,18 @@ void loop() {
       // 閉腕処理
       SerialBT.println("stop arm");
       arm_wheel.Stop();
+    }
+    else if (c == 'x')
+    {
+      SerialBT.println("speed up arm");
+      arm_speed += 0.001;
+      SerialBT.println(arm_speed, 4);
+    }
+    else if (c == 'z')
+    {
+      SerialBT.println("speed down arm");
+      arm_speed -= 0.001;
+      SerialBT.println(arm_speed, 4);
     }
     else if (c == 'q')
     {
