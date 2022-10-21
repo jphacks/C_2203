@@ -19,5 +19,5 @@ def animate():
     socketio.emit('animate', q, broadcast=True)
     return "animation succeeded"
 
-# if __name__ == '__main__':
-#     socketio.run(app, host='0.0.0.0', debug=True, port=8000)
+if __name__ == '__main__':
+    socketio.run(app, host='0.0.0.0', debug=True, port=8000)
