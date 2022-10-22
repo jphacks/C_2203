@@ -6,11 +6,12 @@ import numpy as np
 import serial
 
 import time
+import requests
 
 serialBT = serial.Serial('COM4', 9600)
 
 def gomi_detect(frame, bg):
-    th = 70
+    th = 60
     is_detect = False
     gomi_xy = (0, 0)
     # グレースケール変換
@@ -140,13 +141,17 @@ def car_control(car_control_flag, theta, target_dir, dist, is_return):
 
     elif car_control_flag == 5:
         if not is_return:
+            http_request(0)
             write_to_esp("o", 3.0)
             write_to_esp("c", 3.0)
+            http_request(3)
         else:
+            http_request(2)
             write_to_esp("o", 3.0)
             # write_to_esp("b", 1.0)
             # write_to_esp("r", 7.0)
             # write_to_esp("s", 0.1)
+            http_request(0)
         car_control_flag = 0
         is_reached = True
 
@@ -154,13 +159,25 @@ def car_control(car_control_flag, theta, target_dir, dist, is_return):
     return car_control_flag, is_reached
 
 
+def http_request(query_num):
+    query = ""
+    if query_num == 0:
+        query = "stop"
+    elif query_num == 1:
+        query = "walk"
+    elif query_num == 2:
+        query = "stop_with_ball"
+    elif query_num == 3:
+        query = "walk_with_ball"
+    r = requests.get('http://localhost:8000/animate?q=' + query)
+
 def main():
     mode = 0
     detect_cnt = 0
     start_cnt = 0
     stop_cool_cnt = 0
     gomi_xy = (0, 0)
-    goal_xy = (640, 600)
+    goal_xy = (900, 50)
     car_control_flag = 0
     is_return = False
 
@@ -168,7 +185,7 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
     cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-    cap.set(cv2.CAP_PROP_FOCUS, 0)
+    cap.set(cv2.CAP_PROP_FOCUS, 100)
 
     # 最初のフレームを背景画像に設定
     # ret, bg = cap.read()
@@ -198,7 +215,7 @@ def main():
             else:
                 detect_cnt = 0
             # ゴミを検出して3秒経過したらモード2に移行
-            if detect_cnt >= 60:
+            if detect_cnt >= 30:
                 mode = 2
                 print("ゴミの位置を特定．移動を開始します．")
         elif mode == 2:
@@ -210,8 +227,9 @@ def main():
                 cv2.arrowedLine(frame, fw_xy, gomi_xy, (255, 0, 0), thickness=3)
                 print("車を検知．移動を開始します．")
                 # goal_xy = bc_xy
-                time.sleep(3)
+                time.sleep(1)
                 mode = 3
+                http_request(1)
         elif mode == 3:
             fw_xy, bc_xy = get_car_dir(frame, gomi_xy)
             if fw_xy is not None:
