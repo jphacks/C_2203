@@ -1,5 +1,6 @@
 import {
-  threexInit,
+  models,
+  arMarkerControls,
   walk,
   stop,
   walkWithBall,
@@ -7,11 +8,46 @@ import {
   stroke,
 } from "./threeX.js";
 
-threexInit(() => {
-  // setTimeout(walk(), 10000);
-  // setTimeout(stop(), 3000);
-  // setTimeout(walkWithBall(), 3000);
-  // setTimeout(stopWithBall(), 3000);
-  // setTimeout(stroke(), 3000);
-  // setTimeout(stop(), 3000);
-});
+let demoStart = false;
+
+function sleep(ms) {
+  return new Promise(function (resolve) {
+    setTimeout(function () {
+      resolve();
+    }, ms);
+  });
+}
+setInterval(() => {
+  if (
+    models.withHeart.model &&
+    arMarkerControls.object3d.visible &&
+    !demoStart
+  ) {
+    demoStart = true;
+    sleep(1000)
+      .then(() => {
+        walk();
+        return sleep(3000);
+      })
+      .then(() => {
+        stop();
+        return sleep(3000);
+      })
+      .then(() => {
+        walkWithBall();
+        return sleep(3000);
+      })
+      .then(() => {
+        stopWithBall();
+        return sleep(3000);
+      })
+      .then(() => {
+        stroke();
+        return sleep(3000);
+      })
+      .then(() => {
+        stop();
+        return sleep(3000);
+      });
+  }
+}, 3000);

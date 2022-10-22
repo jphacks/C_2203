@@ -1,12 +1,12 @@
 const clock = new THREE.Clock();
 
 let scene, camera, renderer;
-let arToolkitSource, arToolkitContext, arMarkerControls;
+export let arToolkitSource, arToolkitContext, arMarkerControls;
 let markerRoot;
 let canvasElement;
 
 // model関連
-let models = {
+export let models = {
   walk: {
     url: "static/data/dog.glb",
     model: null,
@@ -29,7 +29,7 @@ let models = {
 let currentModelName;
 let cloneCurrentModel;
 
-export function threexInit(callback) {
+export function threexInit() {
   scene = new THREE.Scene();
 
   // カメラ
@@ -99,7 +99,6 @@ export function threexInit(callback) {
 
   loadModels().then(() => {
     initModel("walk");
-    callback && callback();
   });
   // gltfオブジェクトをクリックした時のアクション
   renderer.domElement.addEventListener(
