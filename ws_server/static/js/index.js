@@ -1,4 +1,3 @@
-import { predict, handInit } from "./handtracking.js";
 const clock = new THREE.Clock();
 
 let scene, camera, renderer;
@@ -35,7 +34,7 @@ function threexInit() {
   scene = new THREE.Scene();
 
   // カメラ
-  camera = new THREE.Camera();
+  camera = new THREE.PerspectiveCamera(45);
   scene.add(camera);
 
   // 光源
@@ -47,7 +46,6 @@ function threexInit() {
 
   // 出力先指定
   canvasElement = document.getElementById("output_canvas");
-  console.log(canvasElement);
   renderer = new THREE.WebGLRenderer({
     canvas: canvasElement,
     antialias: true,
@@ -78,7 +76,6 @@ function threexInit() {
 
   arToolkitSource.init(() => {
     setTimeout(async () => {
-      await handInit();
       tick();
       handleResize();
       [].slice.call(document.querySelectorAll(".invisible")).forEach((elm) => {
@@ -104,7 +101,20 @@ function threexInit() {
   loadModels().then(() => {
     initModel("walk");
   });
-  console.log(models);
+  // gltfオブジェクトをクリックした時のアクション
+  renderer.domElement.addEventListener(
+    "dblclick",
+    (event) => {
+      if (arMarkerControls.object3d.visible) {
+        const zDistance =
+          camera.position.z - arMarkerControls.object3d.position.z;
+        if (zDistance < 5) {
+          stroke();
+        }
+      }
+    },
+    false
+  );
 }
 async function loadModels() {
   // 3Dモデル読み込み
@@ -114,7 +124,6 @@ async function loadModels() {
     const model = await loader.loadAsync(v.url);
     v.animations = await model.animations;
     v.model = await model.scene;
-    console.log(v);
 
     if (v.animations && v.animations.length) {
       v.mixer = new THREE.AnimationMixer(v.model);
@@ -133,7 +142,6 @@ async function loadModels() {
 
 function initModel(modelName) {
   currentModelName = modelName;
-  console.log(models["walk"]);
   // marker lost時のためのコピー
   cloneModel(models[modelName].model);
 
@@ -181,18 +189,6 @@ function update() {
       cloneCurrentModel.visible = true;
       console.log("marker lost");
     }
-
-    // 手の検知
-    predict().then((predictions) => {
-      // markerが一定以上カメラに近づいていることを判定
-      if (predictions?.length > 0 && arMarkerControls.object3d.visible) {
-        const distance =
-          camera.position.z - arMarkerControls.object3d.position.z;
-        if (distance < 6) {
-          stroke();
-        }
-      }
-    });
   }
 
   if (models[currentModelName]?.mixer) {
@@ -262,5 +258,4 @@ function stroke() {
   }
   changeModel("withHeart");
   changeAnimation(1);
-  console.log("stroke");
 }
