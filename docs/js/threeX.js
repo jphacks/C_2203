@@ -8,19 +8,19 @@ let canvasElement;
 // model関連
 export let models = {
   walk: {
-    url: "static/data/dog.glb",
+    url: "data/dog.glb",
     model: null,
     mixer: null,
     animations: null,
   },
   withBall: {
-    url: "static/data/dog_ball.glb",
+    url: "data/dog_ball.glb",
     model: null,
     mixer: null,
     animations: null,
   },
   withHeart: {
-    url: "static/data/dog_heart.glb",
+    url: "data/dog_heart.glb",
     model: null,
     mixer: null,
     animations: null,
@@ -59,7 +59,7 @@ export function threexInit() {
 
   // threejsベースのarjsを設定
   arToolkitContext = new THREEx.ArToolkitContext({
-    cameraParametersUrl: "static/data/camera_para.dat",
+    cameraParametersUrl: "data/camera_para.dat",
     detectionMode: "mono",
   });
 
@@ -94,7 +94,7 @@ export function threexInit() {
   // markerのpositionのzIndex：奥→手前はマイナス→0
   arMarkerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
     type: "pattern",
-    patternUrl: "static/data/pattern.patt",
+    patternUrl: "data/pattern.patt",
   });
 
   loadModels().then(() => {
