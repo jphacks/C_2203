@@ -1,6 +1,6 @@
 # ひろうけん(c_2203)
 
-[![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2022/08/JPHACKS2022_ogp.jpg)](https://drive.google.com/file/d/1vhDaGj3s5i1kK3Fb4spqDCBEw3eVKLR5/view?usp=sharing)
+[![hiroken](https://github.com/jphacks/C_2203/blob/master/documents/car.jpg)](https://drive.google.com/file/d/1vhDaGj3s5i1kK3Fb4spqDCBEw3eVKLR5/view?usp=sharing)
 
 ## 製品概要
 ### 背景(製品開発のきっかけ、課題等）
@@ -19,7 +19,7 @@
 モーターの制御にはESP-WROOM-32というマイコンを使用しており、**ゴミを検出するとゴミ解析PCからBluetoothを介して車体の操作**しています。
 
 また**装飾にもこだわり、ハードウェアの圧迫感を全く感じさせない**ようにしました。
-<img src="https://github.com/jphacks/C_2203/blob/master/documents/car.jpg" width="70%">
+<img src="https://github.com/jphacks/C_2203/blob/master/documents/car_all.jpg" width="70%">
 
 #### AR用Webサイト
 Webサイトでは **「ひろうけん」の状態に応じでARアニメーションが表示** されます。
