@@ -19,7 +19,7 @@
 モーターの制御にはESP-WROOM-32というマイコンを使用しており、**ゴミを検出するとゴミ解析PCからBluetoothを介して車体の操作**しています。
 
 また**装飾にもこだわり、ハードウェアの圧迫感を全く感じさせない**ようにしました。
-<img src="https://github.com/jphacks/C_2203/blob/master/documents/car_all.jpg" width="70%">
+<img src="https://github.com/jphacks/C_2203/blob/master/documents/car_all.png" width="70%">
 
 #### AR用Webサイト
 Webサイトでは **「ひろうけん」の状態に応じでARアニメーションが表示** されます。
