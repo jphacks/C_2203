@@ -89,3 +89,6 @@ ARで可愛らしい姿が見えるのはもちろんのこと、**Web上で撫�
 ##### 電子回路
 全ての電子回路を独自に作成しました。
 <img src="https://github.com/jphacks/C_2203/blob/master/documents/circuit/circuit.jpg" width="100%">
+
+##### 車体の制御
+オブジェクト指向に則って車体・車輪・アームのクラスを分割しました。[file](https://github.com/jphacks/C_2203/blob/master/esp32/esp32.ino)
