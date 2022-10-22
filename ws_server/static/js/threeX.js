@@ -115,6 +115,19 @@ export function threexInit(callback) {
     },
     false
   );
+  renderer.domElement.addEventListener(
+    "touchend",
+    (event) => {
+      if (arMarkerControls.object3d.visible) {
+        const zDistance =
+          camera.position.z - arMarkerControls.object3d.position.z;
+        if (zDistance < 5) {
+          stroke();
+        }
+      }
+    },
+    false
+  );
 }
 async function loadModels() {
   // 3Dモデル読み込み
