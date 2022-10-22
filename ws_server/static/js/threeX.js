@@ -146,7 +146,7 @@ async function loadModels() {
       action.play();
     }
 
-    v.model.scale.set(4.0, 4.0, 4.0);
+    v.model.scale.set(2.2, 2.2, 2.2);
     v.model.position.set(0, 0, 0);
     v.model.rotation.y = Math.PI;
   }
