@@ -1,4 +1,4 @@
-import { walk, stop, walkWithBall, stopWithBall } from "./index.js";
+import { walk, stop, walkWithBall, stopWithBall } from "./threeX.js";
 // 各アニメーションの変更定義
 // アニメーション止まる
 const animationStop = () => {
