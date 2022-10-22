@@ -85,7 +85,7 @@ ARで可愛らしい姿が見えるのはもちろんのこと、**Web上で撫�
 ### 独自技術
 #### ハッカソンで開発した独自機能・技術
 ##### ゴミの検知（画像処理）[実装箇所](https://github.com/jphacks/C_2203/blob/master/image_processing/main.py#L12..L48)
-<img>
+<img src="https://github.com/jphacks/C_2203/blob/master/documents/image_processing.png" width="100%">
 
 ##### 電子回路
 <img src="https://github.com/jphacks/C_2203/blob/master/documents/circuit/circuit.jpg" width="100%">
