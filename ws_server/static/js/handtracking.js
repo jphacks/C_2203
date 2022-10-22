@@ -1,18 +1,28 @@
 let detector;
 let videoEl;
 
-export async function handInit() {
+export async function predict() {
   // let videoEl = document.getElementById("input_video");
   videoEl = document.getElementById("arjs-video");
-  const model = handPoseDetection.SupportedModels.MediaPipeHands;
-  const detectorConfig = {
-    runtime: "mediapipe",
-    solutionPath: "https://cdn.jsdelivr.net/npm/@mediapipe/hands",
-  };
-  detector = await handPoseDetection.createDetector(model, detectorConfig);
-}
+  const hands = new Hands({
+    locateFile: (file) => {
+      return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+    },
+  });
+  hands.setOptions({
+    maxNumHands: 2,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5,
+  });
 
-export async function predict() {
-  const predictions = await detector.estimateHands(videoEl, {});
-  return predictions;
+  const camera = new Camera(videoEl, {
+    onFrame: async () => {
+      await hands.send({ image: videoEl });
+    },
+    width: 1280,
+    height: 720,
+  });
+  camera.start();
+  return hands;
 }
