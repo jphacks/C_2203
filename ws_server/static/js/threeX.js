@@ -109,6 +109,7 @@ export function threexInit() {
           camera.position.z - arMarkerControls.object3d.position.z;
         if (zDistance < 5) {
           stroke();
+          sleep(5000).then(stop);
         }
       }
     },
@@ -122,6 +123,7 @@ export function threexInit() {
           camera.position.z - arMarkerControls.object3d.position.z;
         if (zDistance < 5) {
           stroke();
+          sleep(5000).then(stop);
         }
       }
     },
@@ -270,4 +272,12 @@ export function stroke() {
   }
   changeModel("withHeart");
   changeAnimation(1);
+}
+
+export function sleep(ms) {
+  return new Promise(function (resolve) {
+    setTimeout(function () {
+      resolve();
+    }, ms);
+  });
 }
